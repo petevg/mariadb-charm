@@ -1,0 +1,42 @@
+name: mariadb
+summary: A Charm to install MariaDB
+maintainer: Daniel Bartholomew <dbart@mariadb.com>
+description: |
+  MariaDB is an open source database server. It can be used as the backing
+  database for web, business, and other applications and application servers.
+  It is an evolution of the popular MySQL database, the M in the popular LAMP
+  (Linux, Apache, MySQL, PHP) web-based application server software stack.
+  MariaDB offers enhanced performance, more features, and greater scalability
+  while maintaining full transparent compatibility with the many existing
+  applications built to work with MySQL. This charm downloads and deploys
+  MariaDB on an Ubuntu system.
+tags:
+  - databases
+subordinate: false
+provides:
+  db:
+    interface: mysql
+  db-admin:
+    interface: mysql-root
+  shared-db:
+    interface: mysql-shared
+  master:
+    interface: mysql-oneway-replication
+  munin:
+    interface: munin-node
+  monitors:
+    interface: monitors
+  local-monitors:
+    interface: local-monitors
+    scope: container
+peers:
+  cluster:
+    interface: mysql-ha
+requires:
+  slave:
+    interface: mysql-oneway-replication
+  ceph:
+    interface: ceph-client
+  ha:
+    interface: hacluster
+    scope: container
