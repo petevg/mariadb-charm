@@ -110,21 +110,22 @@ if not accepted:
         # install the package from universe, however.
         log('Enterprise EULA not accepted - installing from universe', 'INFO')
     else:
-        log('Enterprise EULA not accepted - installing from mariadb.org', 'INFO')
-        check_call(['apt-key', 'adv', '--keyserver',
-            'hkp://keyserver.ubuntu.com:80',
-            '--recv', key_org])
-        release = lsb_release()['DISTRIB_CODENAME']
-        fetch.add_source("deb %s/%s/ubuntu %s main" % (base_org,series,release), None)
+        log('Enterprise EULA not accepted - installing from universe', 'INFO')
+        #log('Enterprise EULA not accepted - installing from mariadb.org', 'INFO')
+        #check_call(['apt-key', 'adv', '--keyserver',
+        #    'hkp://keyserver.ubuntu.com:80',
+        #    '--recv', key_org])
+        #release = lsb_release()['DISTRIB_CODENAME']
+        #fetch.add_source("deb %s/%s/ubuntu %s main" % (base_org,series,release), None)
     fetch.apt_update()
     packages = ['mariadb-server', 'mariadb-client']
     fetch.apt_install(packages)
-    
+
 else:
     check_call(['apt-key', 'adv', '--keyserver',
         'hkp://keyserver.ubuntu.com:80',
         '--recv', key])
-    check_call(['wget', '-N', 
+    check_call(['wget', '-N',
         "%s/%s/generate/%s/%s" % (base, token, series, pkg)])
     check_call(['dpkg', '-i', 'mariadb-enterprise-repository.deb'])
     fetch.apt_update()
@@ -240,7 +241,7 @@ bind-address		= 0.0.0.0
 #
 # * Fine Tuning
 #
-key_buffer     		= %(key-buffer)s
+key_buffer              = %(key-buffer)s
 max_allowed_packet	= 16M
 thread_stack            = 192K
 thread_cache_size       = 8
@@ -264,9 +265,9 @@ query_cache_type = %(query-cache-type)s
 # As of 5.1 you can enable the log at runtime!
 #general_log_file        = /usr/local/mysql/data/mysql.log
 #general_log             = 1
-# 
+#
 # Error log - should be very few entries.
-# 
+#
 log_error                = /var/log/mysql/error.log
 #
 # Here you can see queries with especially long duration
@@ -316,7 +317,7 @@ max_allowed_packet	= 16M
 #no-auto-rehash	# faster start of mysql but no tab completition
 
 [isamchk]
-key_buffer     		= 16M
+key_buffer              = 16M
 
 #
 # * IMPORTANT: Additional settings that can override those from this file!
