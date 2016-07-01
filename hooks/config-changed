@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 from subprocess import check_output, check_call, CalledProcessError
 import tempfile
@@ -8,7 +8,6 @@ import hashlib
 import os
 import sys
 import platform
-from string import upper
 from subprocess import Popen, PIPE
 
 sys.path.insert(0, os.path.join(os.environ['CHARM_DIR'], 'lib'))
@@ -67,7 +66,8 @@ else:
 if IS_32BIT_SYSTEM:
     log("32bit system restrictions in play", "INFO")
 
-configs = json.loads(check_output(['config-get','--format=json']))
+configs = json.loads(
+    check_output(['config-get','--format=json']).decode('utf-8'))
 
 def get_memtotal():
     with open('/proc/meminfo') as meminfo_file:
@@ -75,7 +75,7 @@ def get_memtotal():
             (key, mem) = line.split(':', 2)
             if key == 'MemTotal':
                 (mtot, modifier) = mem.strip().split(' ')
-                return '%s%s' % (mtot, upper(modifier[0]))
+                return '%s%s' % (mtot, modifier[0].upper())
 
 
 
@@ -97,8 +97,8 @@ with open('/var/lib/mysql/mysql.passwd', 'r') as rpw:
 
 # preseed debconf with our admin password
 dconf = Popen(['debconf-set-selections'], stdin=PIPE)
-dconf.stdin.write("%s %s/root_password password %s\n" % (package, package, root_pass))
-dconf.stdin.write("%s %s/root_password_again password %s\n" % (package, package, root_pass))
+dconf.stdin.write(("%s %s/root_password password %s\n" % (package, package, root_pass)).encode())
+dconf.stdin.write(("%s %s/root_password_again password %s\n" % (package, package, root_pass)).encode())
 dconf.communicate()
 dconf.wait()
 
@@ -349,7 +349,7 @@ targets = {'/etc/mysql/conf.d/binlog.cnf': binlog_cnf,
            }
 
 need_restart = False
-for target, content in targets.iteritems():
+for target, content in targets.items():
     tdir = os.path.dirname(target)
     if len(content) == 0 and os.path.exists(target):
         os.unlink(target)
@@ -359,11 +359,11 @@ for target, content in targets.iteritems():
         t.write(content)
         t.flush()
         tmd5 = hashlib.md5()
-        tmd5.update(content)
+        tmd5.update(content.encode())
         if os.path.exists(target):
             with open(target, 'r') as old:
                 md5 = hashlib.md5()
-                md5.update(old.read())
+                md5.update(old.read().encode())
                 oldhash = md5.digest()
                 if oldhash != tmd5.digest():
                     os.rename(target, '%s.%s' % (target, md5.hexdigest()))
