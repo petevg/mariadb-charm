@@ -102,21 +102,9 @@ dconf.stdin.write(("%s %s/root_password_again password %s\n" % (package, package
 dconf.communicate()
 dconf.wait()
 
-# assumption of mariadb packages being delivered from code.mariadb
+# install packages
 if not accepted:
-    if check_output(['uname', '-p']).decode('utf-8').strip() == 's390x':
-        # On IBM z Linux, we do not have access to the enterprise
-        # packages, so we must refuse the enterprise license. We can
-        # install the package from universe, however.
-        log('Enterprise EULA not accepted - installing from universe', 'INFO')
-    else:
-        log('Enterprise EULA not accepted - installing from universe', 'INFO')
-        #log('Enterprise EULA not accepted - installing from mariadb.org', 'INFO')
-        #check_call(['apt-key', 'adv', '--keyserver',
-        #    'hkp://keyserver.ubuntu.com:80',
-        #    '--recv', key_org])
-        #release = lsb_release()['DISTRIB_CODENAME']
-        #fetch.add_source("deb %s/%s/ubuntu %s main" % (base_org,series,release), None)
+    log('Enterprise EULA not accepted - installing from universe', 'INFO')
     fetch.apt_update()
     packages = ['mariadb-server', 'mariadb-client']
     fetch.apt_install(packages)
